@@ -44,7 +44,7 @@ public class JwtTest {
                     + "zU1ip-_TXnlkKN0MNxPug-9pWtOzhw5oDfcoxGmsZCg";
             //the end of the bearer, the signature, is wrong, it will be regenerated.
             Jwt jwt = new Jwt(bearer);
-            String secret = "secret";
+            String secret = "CCY9C-YdWSZ0hbL_S3STGHcpEDsmrOrzFhUmMGkiApSuFE4J";
             jwt.sign(secret);
 
             ObjectMapper om = new ObjectMapper();
@@ -52,15 +52,13 @@ public class JwtTest {
             String part1 = om.writeValueAsString(jwt.getPayload());
 
             String data = (Base64.encodeBase64URLSafeString(part0.getBytes())) + "." + (Base64.encodeBase64URLSafeString(part1.getBytes()));
-            byte[] base64 = calcHmacSha256(Base64.decodeBase64URLSafe("secret"), data.getBytes());
+            byte[] base64 = calcHmacSha256("CCY9C-YdWSZ0hbL_S3STGHcpEDsmrOrzFhUmMGkiApSuFE4J".getBytes(), data.getBytes());
             String signature = Base64.encodeBase64URLSafeString(base64);
             
             Assert.assertEquals(signature, jwt.getSignature().getEncoded());
             Assert.assertTrue(jwt.verifySignature(secret));
-//        System.err.println(Base64.encodeBase64URLSafeString(base64));
-            System.err.println();
         } catch (Exception ex) {
-            
+            ex.printStackTrace();
             Assert.fail();
         }
     }
