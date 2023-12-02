@@ -16,11 +16,12 @@ import org.springframework.data.repository.CrudRepository;
  *
  * @author caio
  */
-@Transactional 
+@Transactional
 public interface CrudDocumentRepository extends CrudRepository<Document, UUID> {
 
     List<Document> findByTitle(String title);
+
     List<Document> findByDomain(Domain domain);
+
     List<Document> findByDomainAndRestrictedFalse(Domain domain);
-//    List<Document> findByAuthor(String authorName);
 }

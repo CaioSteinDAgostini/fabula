@@ -59,7 +59,7 @@ public class DocumentService {
 
     public Page<Document> getAll(Domain domain, Pageable page) {
 
-        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, page);
+        return this.pageDocumentRepository.findByDomainAndRestrictedFalseWithPagination(domain, page);
     }
 
     public List<Document> getAll(Domain domain) {
@@ -67,7 +67,7 @@ public class DocumentService {
     }
 
     public Page<Document> getAllNotRestricted(Domain domain, Pageable page) {
-        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, page);
+        return this.pageDocumentRepository.findByDomainAndRestrictedFalseWithPagination(domain, page);
     }
 
     public List<Document> getAllNotRestricted(Domain domain) {

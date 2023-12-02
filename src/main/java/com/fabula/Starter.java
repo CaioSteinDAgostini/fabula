@@ -163,11 +163,11 @@ public class Starter implements InitializingBean {
 //        domainService.recursiveDeleteDomain(domainService.getDomain(fabula.getId()).get());
 //        File file = new File("/home/caio/images/Screenshot_20230202_180425.png");
         System.err.println("\n\nTESTING PAGINATION");
-        pdr.findAllByDomainAndRestrictedFalseWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
+        pdr.findByDomainAndRestrictedFalseWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
             System.err.println(d);
         });
         System.err.println("======");
-        pdr.findAllByDomainWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
+        pdr.findByDomainWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
             System.err.println(d);
         });
         System.err.println("--------------");

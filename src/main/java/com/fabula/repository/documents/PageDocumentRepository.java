@@ -22,19 +22,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 @Transactional
 public interface PageDocumentRepository extends PagingAndSortingRepository<Document, UUID>, JpaRepository<Document, UUID> {
 
-//    @Query("SELECT t FROM Tutorial t")
-//Page<Tutorial> findAllWithPagination(Pageable pageable);
-//
-//@Query("SELECT t FROM Tutorial t WHERE t.published=?1")
-//Page<Tutorial> findByPublishedWithPagination(boolean isPublished, Pageable pageable);
-//  
-//@Query("SELECT t FROM Tutorial t WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', ?1,'%'))")
-//Page<Tutorial> findByTitleWithPagination(String title, Pageable pageable);
-//    List<Document> findAllByTitle(String title, Pageable pageable);
     @Query(value = "SELECT document FROM Document document WHERE document.domain = :domain")
-    Page<Document> findAllByDomainWithPagination(Domain domain, Pageable pageable);
+    Page<Document> findByDomainWithPagination(Domain domain, Pageable pageable);
 
     @Query(value = "SELECT document FROM Document document WHERE document.domain = :domain AND not document.restricted" )
-    Page<Document> findAllByDomainAndRestrictedFalseWithPagination(Domain domain, Pageable pageable);
-//    List<Document> findByAuthor(String authorName);
+    Page<Document> findByDomainAndRestrictedFalseWithPagination(Domain domain, Pageable pageable);
 }
