@@ -9,14 +9,15 @@ import com.fabula.model.accounts.Account;
 import com.fabula.model.authorization.jwt.InvalidJwtException;
 import com.fabula.model.document.Document;
 import com.fabula.model.domain.Domain;
-import com.fabula.repository.documents.DocumentRepository;
 import com.fabula.service.accounts.UserAndAccountService;
 import com.fabula.service.authorization.AuthorizationService;
 import com.fabula.service.documents.DocumentService;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.fabula.repository.documents.CrudDocumentRepository;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -40,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DocumentController {
 
     @Autowired
-    DocumentRepository documentRepository;
+    CrudDocumentRepository documentRepository;
     @Autowired
     DocumentService documentService;
     @Autowired
@@ -88,7 +92,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents")
-    public ResponseEntity<Set<Document>> getDocuments(@RequestHeader(name = "Authorization", required = false) String bearer) {
+    public ResponseEntity<List<Document>> getDocuments(@RequestParam(name = "pageable", required = false) Pageable page, @RequestHeader(name = "Authorization", required = false) String bearer) {
         try {
             Optional<Account> optionalAccount = accountsService.decodeAccount(bearer);
             if (optionalAccount.isPresent()) {
@@ -98,10 +102,24 @@ public class DocumentController {
                     System.err.println("\n\nB");
                     Domain domain = account.getDomain();
                     if (authorizationService.verify(account, domain, Document.class, HttpMethod.GET)) {
-                        Set<Document> documents = documentService.getAll(domain);
+                        List<Document> documents;
+                        System.err.println("PAGEABLE VALUE "+page);
+                        if (page != null) {
+                            System.err.println("\n\nHAS PAGINATION\n\n");
+                            documents = documentService.getAll(domain, page);
+                        } else {
+                            documents = documentService.getAll(domain);
+                        }
                         return new ResponseEntity<>(documents, HttpStatus.OK);
+
                     } else {
-                        Set<Document> documents = documentService.getAllNotRestricted(domain);
+System.err.println("PAGEABLE VALUE "+page);
+                        List<Document> documents;
+                        if (page != null) {
+                            documents = documentService.getAllNotRestricted(domain, page);
+                        } else {
+                            documents = documentService.getAllNotRestricted(domain);
+                        }
                         return new ResponseEntity<>(documents, HttpStatus.OK);
                     }
                 } else {
@@ -132,24 +150,21 @@ public class DocumentController {
                 if (account.hasDomain()) {
                     Domain domain = account.getDomain();
 //                    if (authorizationService.verify(account, domain, Document.class, HttpMethod.PUT)) {
-                        Optional<Document> optionalDocument = documentService.get(document.getId());
-                        if(optionalDocument.isPresent()){
-                            if(optionalDocument.get().getDomain().equals(domain)){
-                                document = documentService.save(document);
-                                return new ResponseEntity<>(document, HttpStatus.OK);
-                            }
-                            else{
-                                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-                            }
-                            
+                    Optional<Document> optionalDocument = documentService.get(document.getId());
+                    if (optionalDocument.isPresent()) {
+                        if (optionalDocument.get().getDomain().equals(domain)) {
+                            document = documentService.save(document);
+                            return new ResponseEntity<>(document, HttpStatus.OK);
+                        } else {
+                            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                         }
-                        else{
-                            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                        }
-                    } 
-                    else{
-                        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                }
 //                } else {
 //                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 //                }

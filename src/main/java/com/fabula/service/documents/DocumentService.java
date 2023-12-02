@@ -8,18 +8,20 @@ package com.fabula.service.documents;
 import com.fabula.model.document.Document;
 import com.fabula.model.domain.Domain;
 import com.fabula.model.file.File;
-import com.fabula.model.file.ImageThumbnail;
-import com.fabula.repository.documents.DocumentRepository;
 import com.fabula.service.files.FileService;
 import com.fabula.service.files.ImageService;
 import jakarta.transaction.Transactional;
 import java.security.InvalidParameterException;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import com.fabula.repository.documents.CrudDocumentRepository;
+import com.fabula.repository.documents.PageDocumentRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -30,7 +32,9 @@ import org.springframework.stereotype.Service;
 public class DocumentService {
 
     @Autowired
-    DocumentRepository documentRepository;
+    CrudDocumentRepository crudDocumentRepository;
+    @Autowired
+    PageDocumentRepository pageDocumentRepository;
     @Autowired
     ImageService imageService;
     @Autowired
@@ -38,39 +42,46 @@ public class DocumentService {
 //    @Autowired
 //    EntityManager em;
 
-    
-    
     @Transactional
     public Optional<Document> create(String title, String subtitle, String content, boolean isPrivate, Domain domain, File titleImage) {
-        if(domain==null){
+        if (domain == null) {
             throw new InvalidParameterException();
         }
-        Document document = new Document(title, subtitle, content, isPrivate, domain); 
-        Optional<Document> optionalDocument = Optional.of(documentRepository.save(document));
+        Document document = new Document(title, subtitle, content, isPrivate, domain);
+        Optional<Document> optionalDocument = Optional.of(crudDocumentRepository.save(document));
         return optionalDocument;
     }
-    
-    public Optional<Document> get(UUID documentId){
-        return documentRepository.findById(documentId);
-    }
-    
-    public Set<Document> getAll(Domain domain){
-        return this.documentRepository.findByDomain(domain);
+
+    public Optional<Document> get(UUID documentId) {
+        return crudDocumentRepository.findById(documentId);
     }
 
-        public Set<Document> getAllNotRestricted(Domain domain){
-        return this.documentRepository.findByDomainAndRestrictedFalse(domain);
+    public List<Document> getAll(Domain domain, Pageable page) {
+
+        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, PageRequest.of(0, 5)).getContent();
     }
-        
-    public Document save(Document document){
-        return documentRepository.save(document);
+
+    public List<Document> getAll(Domain domain) {
+        return this.crudDocumentRepository.findByDomain(domain);
     }
-    
-    public void parseImageReferences(Document document){
-        
+
+    public List<Document> getAllNotRestricted(Domain domain, Pageable page) {
+        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, PageRequest.of(0, 5)).getContent();
     }
-    
-    public void parseDocumentReferences(Document document){
-        
+
+    public List<Document> getAllNotRestricted(Domain domain) {
+        return this.crudDocumentRepository.findByDomainAndRestrictedFalse(domain);
+    }
+
+    public Document save(Document document) {
+        return crudDocumentRepository.save(document);
+    }
+
+    public void parseImageReferences(Document document) {
+
+    }
+
+    public void parseDocumentReferences(Document document) {
+
     }
 }

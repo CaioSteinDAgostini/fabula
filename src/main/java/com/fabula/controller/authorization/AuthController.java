@@ -11,6 +11,10 @@ import com.fabula.model.accounts.Account;
 import com.fabula.model.accounts.User;
 import com.fabula.model.authorization.jwt.InvalidJwtException;
 import com.fabula.service.accounts.UserAndAccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,11 +57,11 @@ public class AuthController {
         }
     }
 
-//    @Operation(summary = "Get an authentication token (Authentication : Bearer) for the the user's account for the domain identified by 'domainId'")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "200", description = "OK", content = @Content),
-//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @Operation(summary = "Get an authentication token (Authentication : Bearer) for the the user's account for the domain identified by 'domainId'")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
     @PostMapping("/authorization")
     public ResponseEntity<JwtResponse> authorize(@RequestHeader("Authorization") String bearer,
             @RequestParam UUID domainId,
@@ -71,7 +75,8 @@ public class AuthController {
                 Optional<Account> optionalAccount = accountsService.getAccount(user, domainId);
                 if (optionalAccount.isPresent()) {
                     String token = accountsService.generateAccountJwt(optionalAccount.get());
-                    return ResponseEntity.ok(new JwtResponse(token));
+                    JwtResponse response = new JwtResponse(token);
+                    return ResponseEntity.ok(response);
                 } else {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }

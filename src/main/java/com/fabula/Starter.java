@@ -14,6 +14,7 @@ import com.fabula.model.domain.Domain;
 import com.fabula.model.file.File;
 import com.fabula.model.file.ImageThumbnail;
 import com.fabula.repository.authorization.RoleRepository;
+import com.fabula.repository.documents.PageDocumentRepository;
 import com.fabula.repository.domain.DomainRepository;
 import com.fabula.repository.files.FileRepository;
 import com.fabula.service.accounts.UserAndAccountService;
@@ -22,13 +23,18 @@ import com.fabula.service.authorization.AuthorizationService;
 import com.fabula.service.documents.DocumentService;
 import com.fabula.service.files.FileService;
 import com.fabula.service.files.ImageService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +63,8 @@ public class Starter implements InitializingBean {
     FileRepository fileRepository;
     @Autowired
     ImageService imageService;
+    @Autowired
+    PageDocumentRepository pdr;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -80,12 +88,30 @@ public class Starter implements InitializingBean {
 
         Document doc1 = documentService.create("Sunflowers!", "Hello Document", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2\n\n- item 1\n   - subitem\n  - subitem2\n- item2", false, fabula, sunflowerImage).get();
         doc1.setTitleImage(sunflowerImage);
-        documentService.save(doc1);
+        doc1 = documentService.save(doc1);
         Document doc2 = documentService.create("Broken algorithm ", "Hello Document", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, straighSkeletonImage).get();
         doc2.setTitleImage(straighSkeletonImage);
-        documentService.save(doc2);
-        Document doc3 = documentService.create("Document3", "Hello Document", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabulaBlog, null).get();
-//
+        doc2 = documentService.save(doc2);
+        Document doc3 = documentService.create("Document3", "Hello Document 3", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabulaBlog, null).get();
+        doc3 = documentService.save(doc3);
+        Document doc4 = documentService.create("Document4", "Hello Document 4", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc4 = documentService.save(doc4);
+        Document doc5 = documentService.create("Document5", "Hello Document 5", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc5 = documentService.save(doc5);
+        Document doc6 = documentService.create("Document6", "Hello Document 6", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc6 = documentService.save(doc6);
+        Document doc7 = documentService.create("Document7", "Hello Document 7", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc7 = documentService.save(doc7);
+        Document doc8 = documentService.create("Document8", "Hello Document 8", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc8 = documentService.save(doc8);
+        Document doc9 = documentService.create("Document9", "Hello Document 9", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc9 = documentService.save(doc9);
+        Document doc10 = documentService.create("Document10", "Hello Document 10", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc10 = documentService.save(doc10);
+        Document doc11 = documentService.create("Document11", "Hello Document 11", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc11 = documentService.save(doc11);
+        Document doc12 = documentService.create("Document12", "Hello Document 12", "# Title\n\n## Subtitle\n\ncontent\n\ncontent2", false, fabula, null).get();
+        doc12 = documentService.save(doc12);
 
         Account rootFabulaAccount = accountService.createOrRecoverAccount(rootUser, fabula).get();
         Account rootFabulaBlogAccount = accountService.createOrRecoverAccount(rootUser, fabulaBlog).get();
@@ -107,6 +133,7 @@ public class Starter implements InitializingBean {
 //
         Role fabulaAdmin = authorizationService.createRole("admin", fabula, permissions);
         fabulaAdmin.addAccount(rootFabulaAccount);
+        fabulaAdmin.addAccount(rootFabulaBlogAccount);
         fabulaAdmin = authorizationService.saveRole(fabulaAdmin);
 
         Role fabulaDocumentAll = authorizationService.createRole("fabulaDocumentAll", fabula, authorizationService.createOrRecoverPermissions(true, Document.class, actions));
@@ -135,6 +162,15 @@ public class Starter implements InitializingBean {
 //        accountService.deleteAllAccounts(fabula);  
 //        domainService.recursiveDeleteDomain(domainService.getDomain(fabula.getId()).get());
 //        File file = new File("/home/caio/images/Screenshot_20230202_180425.png");
+        System.err.println("\n\nTESTING PAGINATION");
+        pdr.findAllByDomainAndRestrictedFalseWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
+            System.err.println(d);
+        });
+        System.err.println("======");
+        pdr.findAllByDomainWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
+            System.err.println(d);
+        });
+        System.err.println("--------------");
     }
 
 }

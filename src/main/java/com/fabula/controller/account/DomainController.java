@@ -17,6 +17,11 @@ import org.springframework.http.ResponseEntity;
 import com.fabula.model.domain.Domain;
 import com.fabula.service.accounts.DomainService;
 import com.fabula.service.authorization.AuthorizationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpMethod;
@@ -46,14 +51,14 @@ public class DomainController {
     @Autowired
     AuthorizationService authorizationService;
 
-//    @Operation(summary = "Get the domains the account has access to")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "200", description = "Retrieved the domains",
-//                content = {
-//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
-//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-//        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
-//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @Operation(summary = "Get the domains the account has access to")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Retrieved the domains",
+                content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
+        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
+        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
     @GetMapping("/domains")
     public ResponseEntity<Set<Domain>> getDomains(@RequestHeader("Authorization") String bearer) {
         try {
@@ -84,15 +89,15 @@ public class DomainController {
         }
     }
 
-//    @Operation(summary = "Get the domain identified by 'domainId'")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "200", description = "Retrieved the domain",
-//                content = {
-//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
-//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-//        @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
-//        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
-//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @Operation(summary = "Get the domain identified by 'domainId'")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Retrieved the domain",
+                content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
+        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+        @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
+        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
+        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
     @GetMapping("/domains/{domainId}")
     public ResponseEntity<Domain> getDomainById(@RequestHeader("Authorization") String bearer, @PathVariable("domainId") UUID id) {
         try {
@@ -133,16 +138,16 @@ public class DomainController {
 
     }
 
-//    @Operation(summary = "Create a domain that is child of account's domain")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "201", description = "Created",
-//                content = {
-//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
-//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-//        @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
-//        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
-//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)
-//    })
+    @Operation(summary = "Create a domain that is child of account's domain")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Created",
+                content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
+        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+        @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
+        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
+        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)
+    })
     @PostMapping("/domains")
     public ResponseEntity<Domain> createDomain(@RequestHeader("Authorization") String bearer, @RequestParam String name) {
         try {
@@ -178,15 +183,15 @@ public class DomainController {
         }
     }
 
-//    @Operation(summary = "Create a domain that is child of 'domainId'")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "201", description = "Created",
-//                content = {
-//                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
-//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-//        @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
-//        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
-//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @Operation(summary = "Create a domain that is child of 'domainId'")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Created",
+                content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Domain.class))}),
+        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+        @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
+        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
+        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
     @PostMapping("/domains/{domainId}")
     public ResponseEntity<Account> createDomain(@RequestHeader("Authorization") String bearer, @PathVariable("domainId") UUID domainId, @RequestParam String name) {
         try {
@@ -223,12 +228,12 @@ public class DomainController {
         }
     }
 
-//    @Operation(summary = "Delete the domain identified by 'domainId'")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = "200", description = "Deleted", content = @Content),
-//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-//        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
-//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @Operation(summary = "Delete the domain identified by 'domainId'")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Deleted", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+        @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
+        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
     @DeleteMapping("/domain")
     public ResponseEntity<Void> deleteDomain(@RequestHeader("Authorization") String bearer, @RequestParam(required = false) UUID domainId) {
         try {
