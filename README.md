@@ -117,10 +117,10 @@ public interface CrudDocumentRepository extends CrudRepository<Document, UUID> {
 public interface PageDocumentRepository extends PagingAndSortingRepository<Document, UUID>, JpaRepository<Document, UUID> {
 
     @Query(value = "SELECT document FROM Document document WHERE document.domain = :domain")
-    Page<Document> findAllByDomainWithPagination(Domain domain, Pageable pageable);
+    Page<Document> findByDomainWithPagination(Domain domain, Pageable pageable);
 
     @Query(value = "SELECT document FROM Document document WHERE document.domain = :domain AND not document.restricted" )
-    Page<Document> findAllByDomainAndRestrictedFalseWithPagination(Domain domain, Pageable pageable);
+    Page<Document> findAByDomainAndRestrictedFalseWithPagination(Domain domain, Pageable pageable);
 }
 ```
 
