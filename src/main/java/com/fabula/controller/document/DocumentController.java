@@ -14,7 +14,6 @@ import com.fabula.service.authorization.AuthorizationService;
 import com.fabula.service.documents.DocumentService;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fabula.repository.documents.CrudDocumentRepository;
-import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
 
 /**
  *
@@ -42,6 +43,8 @@ import org.springframework.data.domain.Pageable;
 @CrossOrigin
 @RequestMapping("/api")
 public class DocumentController {
+
+    private static final Logger log = LoggerFactory.getLogger(DocumentController.class.getSimpleName());
 
     @Autowired
     CrudDocumentRepository documentRepository;
@@ -92,48 +95,31 @@ public class DocumentController {
     }
 
     @GetMapping("/documents")
-    public ResponseEntity<List<Document>> getDocuments(@RequestParam(name = "pageable", required = false) Pageable page, @RequestHeader(name = "Authorization", required = false) String bearer) {
+    public ResponseEntity<Page<Document>> getDocuments(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestHeader(name = "Authorization", required = false) String bearer) {
         try {
+            PageRequest pageRequest = PageRequest.of(page, size);
             Optional<Account> optionalAccount = accountsService.decodeAccount(bearer);
             if (optionalAccount.isPresent()) {
-                System.err.println("\n\nA");
                 Account account = optionalAccount.get();
                 if (account.hasDomain()) {
-                    System.err.println("\n\nB");
                     Domain domain = account.getDomain();
                     if (authorizationService.verify(account, domain, Document.class, HttpMethod.GET)) {
-                        List<Document> documents;
-                        System.err.println("PAGEABLE VALUE "+page);
-                        if (page != null) {
-                            System.err.println("\n\nHAS PAGINATION\n\n");
-                            documents = documentService.getAll(domain, page);
-                        } else {
-                            documents = documentService.getAll(domain);
-                        }
+                        Page<Document> documents = documentService.getAll(domain, pageRequest);
                         return new ResponseEntity<>(documents, HttpStatus.OK);
 
                     } else {
-System.err.println("PAGEABLE VALUE "+page);
-                        List<Document> documents;
-                        if (page != null) {
-                            documents = documentService.getAllNotRestricted(domain, page);
-                        } else {
-                            documents = documentService.getAllNotRestricted(domain);
-                        }
+                        Page<Document> documents = documentService.getAllNotRestricted(domain, pageRequest);
                         return new ResponseEntity<>(documents, HttpStatus.OK);
                     }
                 } else {
-                    System.err.println("\n\nC");
-                    System.err.println("\n\n\n\n THERE IS NO DOMAIN");
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
             } else {
-                System.err.println("\n\nD");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
             }
         } catch (InvalidJwtException ex) {
-            ex.printStackTrace();
+            log.error("error", ex);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -142,7 +128,6 @@ System.err.println("PAGEABLE VALUE "+page);
 
     @PutMapping("/documents")
     public ResponseEntity<Document> putDocuments(@RequestHeader(name = "Authorization", required = false) String bearer, @RequestBody Document document) {
-        System.err.println("\n\n\n PUT DOCUMENT \n\n\n");
         try {
             Optional<Account> optionalAccount = accountsService.decodeAccount(bearer);
             if (optionalAccount.isPresent()) {

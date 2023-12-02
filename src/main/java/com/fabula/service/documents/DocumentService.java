@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import com.fabula.repository.documents.CrudDocumentRepository;
 import com.fabula.repository.documents.PageDocumentRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -56,17 +57,17 @@ public class DocumentService {
         return crudDocumentRepository.findById(documentId);
     }
 
-    public List<Document> getAll(Domain domain, Pageable page) {
+    public Page<Document> getAll(Domain domain, Pageable page) {
 
-        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, PageRequest.of(0, 5)).getContent();
+        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, page);
     }
 
     public List<Document> getAll(Domain domain) {
         return this.crudDocumentRepository.findByDomain(domain);
     }
 
-    public List<Document> getAllNotRestricted(Domain domain, Pageable page) {
-        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, PageRequest.of(0, 5)).getContent();
+    public Page<Document> getAllNotRestricted(Domain domain, Pageable page) {
+        return this.pageDocumentRepository.findAllByDomainAndRestrictedFalseWithPagination(domain, page);
     }
 
     public List<Document> getAllNotRestricted(Domain domain) {
