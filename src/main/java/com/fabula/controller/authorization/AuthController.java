@@ -30,19 +30,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@CrossOrigin
+@CrossOrigin
 @RequestMapping("/api")
 public class AuthController {
 
     @Autowired
     private UserAndAccountService accountsService;
 
-    @Operation(summary = "Get an authentication token (Authentication : Bearer) for the user or refresh an existing one")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK", content = @Content),
-        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
-        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
+//    @Operation(summary = "Get an authentication token (Authentication : Bearer) for the user or refresh an existing one")
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+//        @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
+//        @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
     @PostMapping("/authentication")
     public ResponseEntity<JwtResponse> createAuthenticationToken(@RequestBody JwtUserRequest authenticationRequest) {
         try {
@@ -63,13 +62,13 @@ public class AuthController {
         @ApiResponse(responseCode = "200", description = "OK", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @PostMapping("/authorization")
     public ResponseEntity<JwtResponse> authorize(@RequestHeader("Authorization") String bearer,
             @RequestParam UUID domainId,
             @RequestParam(required = false) String grantType
     ) {
         try {
+            System.err.println("authorize " + bearer);
             Optional<User> optionalUser = accountsService.decodeUser(bearer);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();

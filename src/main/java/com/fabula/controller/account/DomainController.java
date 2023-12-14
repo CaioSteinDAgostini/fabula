@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author caio
  */
 @RestController
-//@CrossOrigin
+@CrossOrigin
 @RequestMapping("/api")
 public class DomainController {
 
@@ -59,7 +59,6 @@ public class DomainController {
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @GetMapping("/domains")
     public ResponseEntity<Set<Domain>> getDomains(@RequestHeader("Authorization") String bearer) {
         try {
@@ -99,7 +98,6 @@ public class DomainController {
         @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @GetMapping("/domains/{domainId}")
     public ResponseEntity<Domain> getDomainById(@RequestHeader("Authorization") String bearer, @PathVariable("domainId") UUID id) {
         try {
@@ -150,7 +148,6 @@ public class DomainController {
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)
     })
-    @CrossOrigin
     @PostMapping("/domains")
     public ResponseEntity<Domain> createDomain(@RequestHeader("Authorization") String bearer, @RequestParam String name) {
         try {
@@ -195,7 +192,6 @@ public class DomainController {
         @ApiResponse(responseCode = "409", description = "There is already a Domain with conflicting unique fields", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @PostMapping("/domains/{domainId}")
     public ResponseEntity<Account> createDomain(@RequestHeader("Authorization") String bearer, @PathVariable("domainId") UUID domainId, @RequestParam String name) {
         try {
@@ -238,7 +234,6 @@ public class DomainController {
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @DeleteMapping("/domain")
     public ResponseEntity<Void> deleteDomain(@RequestHeader("Authorization") String bearer, @RequestParam(required = false) UUID domainId) {
         try {

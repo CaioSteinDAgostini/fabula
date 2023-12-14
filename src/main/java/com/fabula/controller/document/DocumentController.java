@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ import org.springframework.data.domain.PageRequest;
  * @author caio
  */
 @RestController
-//@CrossOrigin
+@CrossOrigin
 @RequestMapping("/api")
 public class DocumentController {
 
@@ -57,7 +58,6 @@ public class DocumentController {
     @Autowired
     UserAndAccountService accountsService;
 
-    @CrossOrigin
     @GetMapping("/documents/{documentId}")
     public ResponseEntity<Document> getDocumentById(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("documentId") UUID documentId) {
         log.info("getDocumentById "+documentId);
@@ -99,7 +99,6 @@ public class DocumentController {
         }
     }
 
-    @CrossOrigin
     @GetMapping("/documents")
     public ResponseEntity<List<Document>> getDocuments(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestHeader(name = "Authorization", required = false) String bearer) {
         try {
@@ -132,7 +131,6 @@ public class DocumentController {
         }
     }
 
-    @CrossOrigin
     @PutMapping("/documents")
     public ResponseEntity<Document> putDocuments(@RequestHeader(name = "Authorization", required = false) String bearer, @RequestBody Document document) {
         log.info("PUT documents " + document.getId() + "  bearer "+bearer);
@@ -184,7 +182,6 @@ public class DocumentController {
         }
     }
 
-    @CrossOrigin
     @PostMapping("/documents")
     public ResponseEntity<Document> postDocument(@RequestHeader(name = "Authorization", required = false) String bearer, @RequestBody Document document) {
         try {

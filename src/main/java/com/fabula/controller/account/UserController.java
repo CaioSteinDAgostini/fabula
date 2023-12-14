@@ -31,7 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
  * @author caio
  */
 @RestController
-//@CrossOrigin
+@CrossOrigin
 @RequestMapping("/api")
 public class UserController {
 
@@ -47,7 +47,6 @@ public class UserController {
         @ApiResponse(responseCode = "201", description = "OK", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         try {
@@ -67,7 +66,6 @@ public class UserController {
         @ApiResponse(responseCode = "200", description = "OK", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @DeleteMapping("/users")
     public ResponseEntity<Void> deleteUser(@RequestHeader("Authorization") String bearer) {
         try {

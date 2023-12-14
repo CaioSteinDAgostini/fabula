@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author caio
  */
 @RestController
-//@CrossOrigin
+@CrossOrigin
 @RequestMapping("/api")
 public class AccountController {
 
@@ -43,7 +43,6 @@ public class AccountController {
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
-    @CrossOrigin
     @GetMapping("/accounts")
     public ResponseEntity<Account> getAccount(@RequestHeader("Authorization") String bearer) {
         try {
