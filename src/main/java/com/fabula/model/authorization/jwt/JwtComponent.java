@@ -26,9 +26,6 @@ public interface JwtComponent extends Map<String, Object> {
 
         try {
             String s = mapper.writeValueAsString(this);
-            System.err.println("\n\n");
-            System.err.println(s);
-            System.err.println("\n\n");
             return encodeBase64Url(s);
         } catch (JsonProcessingException ex) {
             throw new IOException(ex);

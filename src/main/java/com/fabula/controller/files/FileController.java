@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author caio
  */
 @RestController
-@CrossOrigin
+//@CrossOrigin
 @RequestMapping("/api")
 public class FileController {
 
@@ -45,6 +45,7 @@ public class FileController {
     @Autowired
     FileRepository fr;
 
+    @CrossOrigin
     @GetMapping("/files/{fileId}")
     public ResponseEntity<File> getFileById(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("fileId") UUID fileId) {
         Optional<File> optionalFile = fileService.get(fileId);
@@ -78,9 +79,9 @@ public class FileController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/files/{fileId}/data")
     public ResponseEntity<byte[]> getFileByIdData(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("fileId") UUID fileId) {
-        System.err.println("\n\n\n\nGET FILE DATA\n\n\n");
         Optional<File> optionalFile = fileService.get(fileId);
         if (optionalFile.isPresent()) {
             File file = optionalFile.get();

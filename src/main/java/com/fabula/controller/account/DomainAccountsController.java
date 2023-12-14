@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
+//@CrossOrigin
 @RequestMapping("/api")
 public class DomainAccountsController {
 
@@ -51,6 +51,7 @@ public class DomainAccountsController {
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @CrossOrigin
     @GetMapping("/domains/{domainId}/accounts")
     public ResponseEntity<Set<Account>> listAccounts(@RequestHeader("Authorization") String bearer, @PathVariable("domainId") UUID domainId) {
         try {
@@ -93,6 +94,7 @@ public class DomainAccountsController {
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @CrossOrigin
     @PostMapping("/domains/{domainId}/accounts")
     public ResponseEntity<Account> createAccount(@RequestHeader("Authorization") String bearer, @RequestParam String username, @PathVariable("domainId") UUID domainId) {
         try {
@@ -144,6 +146,7 @@ public class DomainAccountsController {
         @ApiResponse(responseCode = "400", description = "Invalid headers or parameters", content = @Content),
         @ApiResponse(responseCode = "403", description = "The account does not have the necessary permissions", content = @Content),
         @ApiResponse(responseCode = "501", description = "Internal server error", content = @Content)})
+    @CrossOrigin
     @DeleteMapping("/domains/{domainId}/accounts")
     public ResponseEntity<Account> deleteAccount(@RequestHeader("Authorization") String bearer, @RequestParam String username, @PathVariable("domainId") UUID domainId) {
         try {

@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author caio
  */
 @RestController
-@CrossOrigin
+//@CrossOrigin
 @RequestMapping("/api")
 public class ImageController {
 
@@ -49,6 +49,7 @@ public class ImageController {
     @Autowired
     ImageService imageService;
 
+    @CrossOrigin
     @GetMapping("/thumbnails/{imageId}")
     public ResponseEntity<ImageThumbnail> getThumbnailById(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("imageId") UUID imageId) {
         Optional<ImageThumbnail> optionalFile = imageService.getThumbnail(imageId);
@@ -82,6 +83,7 @@ public class ImageController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/thumbnails/{imageId}/data")
     public ResponseEntity<byte[]> getThumbnailByIdData(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("imageId") UUID imageId) {
         Optional<ImageThumbnail> optionalFile = imageService.getThumbnail(imageId);
@@ -116,6 +118,7 @@ public class ImageController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/thumbnails")
     public ResponseEntity<List<ImageThumbnail>> listThumbnails(@RequestHeader(name = "Authorization", required = false) String bearer) {
         Iterable<ImageThumbnail> iterable = imageService.findAllTumbnails();
