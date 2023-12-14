@@ -330,4 +330,12 @@ In order to start the application, just run
 mvn spring-boot:run
 ```
 
+## How to Dockerize it
+
+```bash
+mvn clean package
+docker build --tag=fabula:latest .
+docker run -p8888:8080 fabula:latest
+```
+
 
