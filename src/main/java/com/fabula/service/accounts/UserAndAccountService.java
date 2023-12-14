@@ -5,6 +5,7 @@
  */
 package com.fabula.service.accounts;
 
+import com.fabula.controller.document.DocumentController;
 import com.fabula.model.accounts.Account;
 import com.fabula.model.domain.Domain;
 import com.fabula.model.accounts.User;
@@ -22,6 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,6 +46,8 @@ public class UserAndAccountService {
     AccountRepository accountRepository;
     @Autowired
     EntityManager em;
+
+    private static final Logger log = LoggerFactory.getLogger(UserAndAccountService.class.getSimpleName());
 
     public static final long JWT_VALIDITY = 5 * 60 * 60;
     @Value("${jwt.secret}")
@@ -70,7 +75,7 @@ public class UserAndAccountService {
     public Optional<User> decodeUser(String bearer) throws InvalidJwtException {
         Optional<Jwt> optionalJwt = convert(bearer);
         if (optionalJwt.isPresent()) {
-            if (optionalJwt.get().getExpiration() > System.currentTimeMillis()){// && optionalJwt.get().verifySignature(secret)) {
+            if (optionalJwt.get().getExpiration() > System.currentTimeMillis()) {// && optionalJwt.get().verifySignature(secret)) {
                 String username = optionalJwt.get().getSubject();
                 Optional<User> optionalUser = this.getUser(username);
                 return optionalUser;
@@ -83,6 +88,7 @@ public class UserAndAccountService {
     }
 
     public Optional<Account> decodeAccount(String bearer) throws InvalidJwtException {
+        log.info("decodeAccount");
         Optional<Jwt> optionalJwt = convert(bearer);
         if (optionalJwt.isPresent()) {
             if (optionalJwt.get().getExpiration() > System.currentTimeMillis()) {
@@ -92,17 +98,22 @@ public class UserAndAccountService {
                     String username = optionalJwt.get().getSubject();
                     Optional<User> optionalUser = this.getUser(username);
                     if (optionalUser.isPresent()) {
+                        log.info("decode account Fetching account for user "+ optionalUser.get().getUsername() +  " for domain "+domainId);
                         return this.getAccount(optionalUser.get(), domainId);
                     } else {
+                        log.error("NO USERNAME AVAILABLE");
                         return Optional.empty();
                     }
                 } else {
+                    log.warn("JWT HAS NO DOMAIN");
                     throw new RuntimeException();
                 }
             } else {
+                log.warn("EXPIRED JWT");
                 throw new InvalidJwtException();
             }
         } else {
+            log.warn("JWT not present");
             return Optional.empty();
         }
     }
@@ -153,7 +164,9 @@ public class UserAndAccountService {
     }
 
     public Optional<Account> getAccount(User user, UUID domainId) {
-        return accountRepository.findByIdUsernameAndIdDomainId(user.getUsername(), domainId);
+        Optional<Account> optional = accountRepository.findByIdUsernameAndIdDomainId(user.getUsername(), domainId);
+        log.info("getAccount("+user.getUsername() + ", "+domainId+") returned "+optional);
+        return optional;
     }
 
     public Optional<Domain> getDomain(UUID domainId) {
@@ -170,8 +183,8 @@ public class UserAndAccountService {
     }
 
     public String generateAccountJwt(Account account) throws InvalidJwtException {
-        Map<String, Object> claims = new HashMap<>(); 
-       Domain domain = account.getDomain();
+        Map<String, Object> claims = new HashMap<>();
+        Domain domain = account.getDomain();
         claims.put(DOMAIN, domain);
         return jwt(claims, account.getUser().getUsername());
     }

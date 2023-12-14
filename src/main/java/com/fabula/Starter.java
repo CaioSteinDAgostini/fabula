@@ -23,18 +23,14 @@ import com.fabula.service.authorization.AuthorizationService;
 import com.fabula.service.documents.DocumentService;
 import com.fabula.service.files.FileService;
 import com.fabula.service.files.ImageService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -78,11 +74,14 @@ public class Starter implements InitializingBean {
         User demoUser2 = accountService.createUser("demo2@domain.com").get();
         User demoUser3 = accountService.createUser("demo3@domain.com").get();
 
-        byte[] straighSkeletonImageBytes = Files.readAllBytes(Paths.get("/home/caio/Imagens/Screenshot_20230202_180425.png"));
+        
+
+        byte[] straighSkeletonImageBytes = Thread.currentThread().getContextClassLoader().getResourceAsStream("Screenshot_20230202_180425.png").readAllBytes();
         File straighSkeletonImage = fileService.create("straight skeleton", straighSkeletonImageBytes, "image/png", fabula).get();
         Optional<ImageThumbnail> straighSkeletonImageThumbnail = imageService.makeThumbnail(straighSkeletonImage);
 
-        byte[] sunflowerImageBytes = Files.readAllBytes(Paths.get("/home/caio/Imagens/sunflower.JPG"));
+
+        byte[] sunflowerImageBytes = Thread.currentThread().getContextClassLoader().getResourceAsStream("sunflower.JPG").readAllBytes();
         File sunflowerImage = fileService.create("sunflower", sunflowerImageBytes, "image/jpg", fabula).get();
         Optional<ImageThumbnail> sunflowerImageThumbnail = imageService.makeThumbnail(sunflowerImage);
 
@@ -162,15 +161,15 @@ public class Starter implements InitializingBean {
 //        accountService.deleteAllAccounts(fabula);  
 //        domainService.recursiveDeleteDomain(domainService.getDomain(fabula.getId()).get());
 //        File file = new File("/home/caio/images/Screenshot_20230202_180425.png");
-        System.err.println("\n\nTESTING PAGINATION");
-        pdr.findByDomainAndRestrictedFalseWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
-            System.err.println(d);
-        });
-        System.err.println("======");
-        pdr.findByDomainWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
-            System.err.println(d);
-        });
-        System.err.println("--------------");
+//        System.err.println("\n\nTESTING PAGINATION");
+//        pdr.findByDomainAndRestrictedFalseWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
+//            System.err.println(d);
+//        });
+//        System.err.println("======");
+//        pdr.findByDomainWithPagination(fabula, PageRequest.of(0, 2)).getContent().stream().forEach((d) -> {
+//            System.err.println(d);
+//        });
+//        System.err.println("--------------");
     }
 
 }

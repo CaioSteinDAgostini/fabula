@@ -57,7 +57,7 @@ public class DocumentService {
         return crudDocumentRepository.findById(documentId);
     }
 
-    public Page<Document> getAll(Domain domain, Pageable page) {
+    public List<Document> getAll(Domain domain, Pageable page) {
 
         return this.pageDocumentRepository.findByDomainAndRestrictedFalseWithPagination(domain, page);
     }
@@ -66,7 +66,7 @@ public class DocumentService {
         return this.crudDocumentRepository.findByDomain(domain);
     }
 
-    public Page<Document> getAllNotRestricted(Domain domain, Pageable page) {
+    public List<Document> getAllNotRestricted(Domain domain, Pageable page) {
         return this.pageDocumentRepository.findByDomainAndRestrictedFalseWithPagination(domain, page);
     }
 

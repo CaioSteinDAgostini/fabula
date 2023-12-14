@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fabula.repository.documents.CrudDocumentRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -57,12 +58,15 @@ public class DocumentController {
     @Autowired
     UserAndAccountService accountsService;
 
-    @GetMapping("/documents/{id}")
-    public ResponseEntity<Document> getDocumentById(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("documentId") String documentId) {
-        Optional<Document> optionalDocument = documentService.get(UUID.fromString(documentId));
+    @GetMapping("/documents/{documentId}")
+    public ResponseEntity<Document> getDocumentById(@RequestHeader(name = "Authorization", required = false) String bearer, @PathVariable("documentId") UUID documentId) {
+        log.info("getDocumentById "+documentId);
+        Optional<Document> optionalDocument = documentService.get(documentId);
         if (optionalDocument.isPresent()) {
+            log.info("document is present");
             Document document = optionalDocument.get();
             if (!document.isRestricted()) {
+                log.info("document is not restricted");
                 return new ResponseEntity<>(document, HttpStatus.OK);
             } else {
                 try {
@@ -86,6 +90,7 @@ public class DocumentController {
                 } catch (InvalidJwtException ex) {
                     return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 } catch (Exception ex) {
+                    log.error("error", ex);
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
@@ -95,7 +100,7 @@ public class DocumentController {
     }
 
     @GetMapping("/documents")
-    public ResponseEntity<Page<Document>> getDocuments(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestHeader(name = "Authorization", required = false) String bearer) {
+    public ResponseEntity<List<Document>> getDocuments(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "size", required = false, defaultValue = "5") Integer size, @RequestHeader(name = "Authorization", required = false) String bearer) {
         try {
             PageRequest pageRequest = PageRequest.of(page, size);
             Optional<Account> optionalAccount = accountsService.decodeAccount(bearer);
@@ -104,11 +109,11 @@ public class DocumentController {
                 if (account.hasDomain()) {
                     Domain domain = account.getDomain();
                     if (authorizationService.verify(account, domain, Document.class, HttpMethod.GET)) {
-                        Page<Document> documents = documentService.getAll(domain, pageRequest);
+                        List<Document> documents = documentService.getAll(domain, pageRequest);
                         return new ResponseEntity<>(documents, HttpStatus.OK);
 
                     } else {
-                        Page<Document> documents = documentService.getAllNotRestricted(domain, pageRequest);
+                        List<Document> documents = documentService.getAllNotRestricted(domain, pageRequest);
                         return new ResponseEntity<>(documents, HttpStatus.OK);
                     }
                 } else {
@@ -128,6 +133,7 @@ public class DocumentController {
 
     @PutMapping("/documents")
     public ResponseEntity<Document> putDocuments(@RequestHeader(name = "Authorization", required = false) String bearer, @RequestBody Document document) {
+        log.info("PUT documents " + document.getId() + "  bearer "+bearer);
         try {
             Optional<Account> optionalAccount = accountsService.decodeAccount(bearer);
             if (optionalAccount.isPresent()) {
@@ -137,23 +143,33 @@ public class DocumentController {
 //                    if (authorizationService.verify(account, domain, Document.class, HttpMethod.PUT)) {
                     Optional<Document> optionalDocument = documentService.get(document.getId());
                     if (optionalDocument.isPresent()) {
+                        document.setId(optionalDocument.get().getId());
+                        
+                        ObjectMapper om = new ObjectMapper();
+                        String json = om.writeValueAsString(document);
+                        log.info("JSON ="+json);
+                        
                         if (optionalDocument.get().getDomain().equals(domain)) {
                             document = documentService.save(document);
                             return new ResponseEntity<>(document, HttpStatus.OK);
                         } else {
+                            log.info("UNAUTHORIZED DOMAIN ACCESS");
                             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                         }
 
                     } else {
+                        log.info("NOT FOUND ");
                         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                     }
                 } else {
+                    log.info("UNAUTHORIZED NO DOMAIN GIVEN");
                     return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                 }
 //                } else {
 //                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 //                }
             } else {
+                log.info("UNAUTHORIZED NO ACCOUNT INFO AVAILABLE");
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
             }
@@ -161,6 +177,7 @@ public class DocumentController {
             ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
+            log.warn("PUT documents " + document, ex);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

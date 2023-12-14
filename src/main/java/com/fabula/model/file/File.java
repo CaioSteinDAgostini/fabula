@@ -50,6 +50,10 @@ public class File implements IResource {
         this.creationDateTime = LocalDateTime.now();
     }
 
+    public File(UUID id){
+        this.id = id;
+    }
+    
     public byte[] getData() {
         return this.data;
     }

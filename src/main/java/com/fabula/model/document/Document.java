@@ -36,6 +36,7 @@ public class Document implements IResource {
     @ManyToOne
     private File titleImage;
     private String subtitle;
+    @Column(columnDefinition="TEXT")
     private String contents;
     @ManyToOne
     @JoinColumn(name = "domain")
